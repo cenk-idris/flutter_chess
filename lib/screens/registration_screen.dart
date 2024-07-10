@@ -64,7 +64,8 @@ class RegistrationScreen extends StatelessWidget {
                                       _usernameInputController.text.trim();
                                   final RegExp usernamePattern =
                                       RegExp(r'^[a-zA-Z0-9]+$');
-                                  if (username.isNotEmpty) {
+                                  if (username.isNotEmpty &&
+                                      usernamePattern.hasMatch(username)) {
                                     await context
                                         .read<UserCubit>()
                                         .addUser(username);

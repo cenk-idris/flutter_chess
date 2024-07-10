@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_chess/services/firebase_RTDB_service.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../models/invite_model.dart';
 import '../../models/user_model.dart';
@@ -27,7 +28,7 @@ class UserCubit extends Cubit<UserState> {
   Future<void> addUser(String username) async {
     emit(UserBeingRegistered());
     try {
-      final User newUser = User(username);
+      final User newUser = User(username, Uuid().v4());
       await DatabaseService().addUserToDB(newUser);
       _user = newUser;
       _listenToInvitesForCurrentUser();

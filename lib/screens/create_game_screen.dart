@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chess/blocs/user_cubit/user_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../blocs/room_cubit/room_cubit.dart';
 import '../models/room_model.dart';
@@ -47,17 +48,40 @@ class CreateGameScreen extends StatelessWidget {
                           listener: (context, roomState) {
                             if (roomState is RoomLoaded) {
                               Navigator.pushNamed(context, '/room-detail');
+                            } else if (roomState is RoomError) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(roomState.message)),
+                              );
                             }
                           },
                           builder: (context, roomState) {
+                            if (roomState is RoomLoading) {
+                              return ElevatedButton(
+                                  onPressed: null,
+                                  child: CircularProgressIndicator());
+                            }
                             return ElevatedButton(
                               onPressed: () async {
                                 final userCubit = context.read<UserCubit>();
                                 final User? user = userCubit.user;
-                                if (user != null) {
+                                final String roomName =
+                                    _roomNameController.text.trim();
+                                final RegExp roomNamePattern =
+                                    RegExp(r'^[a-zA-Z0-9]+$');
+                                if (user != null &&
+                                    roomNamePattern.hasMatch(roomName)) {
                                   final Room room = Room(
                                     owner: user,
-                                    roomName: _roomNameController.text,
+                                    roomName: roomName,
+                                    roomId: Uuid().v4(),
+                                  );
+                                  context.read<RoomCubit>().createRoom(room);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Room name must contain only letters and numbers'),
+                                    ),
                                   );
                                 }
                               },
