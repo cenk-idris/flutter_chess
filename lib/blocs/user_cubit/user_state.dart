@@ -14,6 +14,9 @@ class UserRegistered extends UserState {
   final User user;
 
   UserRegistered(this.user);
+
+  @override
+  List<Object> get props => [user];
 }
 
 class UserRegistrationError extends UserState {

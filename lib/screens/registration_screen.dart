@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chess/user_cubit/user_cubit.dart';
+import 'package:flutter_chess/blocs/user_cubit/user_cubit.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 class RegistrationScreen extends StatelessWidget {
@@ -18,16 +19,18 @@ class RegistrationScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              Icon(
+                FontAwesomeIcons.solidChessRook,
+                size: 100.0,
+                color: Colors.brown,
+              ),
               TextField(
                 onTapOutside: (event) =>
                     FocusManager.instance.primaryFocus?.unfocus(),
                 controller: _usernameInputController,
                 decoration: InputDecoration(hintText: 'Enter your username'),
-              ),
-              SizedBox(
-                height: 30,
               ),
               BlocConsumer<UserCubit, UserState>(
                 listener: (context, userState) {
@@ -67,7 +70,7 @@ class RegistrationScreen extends StatelessWidget {
                                 );
                               }
                             },
-                            child: Text('Enter'),
+                            child: Text('Register'),
                           ),
                         ),
                       ],
