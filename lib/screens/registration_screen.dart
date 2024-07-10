@@ -24,64 +24,72 @@ class RegistrationScreen extends StatelessWidget {
               Icon(
                 FontAwesomeIcons.solidChessRook,
                 size: 100.0,
-                color: Colors.brown,
+                color: Colors.blue,
               ),
-              TextField(
-                onTapOutside: (event) =>
-                    FocusManager.instance.primaryFocus?.unfocus(),
-                controller: _usernameInputController,
-                decoration: InputDecoration(hintText: 'Enter your username'),
-              ),
-              BlocConsumer<UserCubit, UserState>(
-                listener: (context, userState) {
-                  if (userState is UserRegistered) {
-                    Navigator.pushReplacementNamed(context, '/main-screen');
-                  } else if (userState is UserRegistrationError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(userState.message),
-                      ),
-                    );
-                  }
-                },
-                builder: (context, userState) {
-                  if (userState is UserBeingRegistered) {
-                    return CircularProgressIndicator();
-                  } else if (userState is UserNotRegistered ||
-                      userState is UserRegistrationError) {
-                    return Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              final String username =
-                                  _usernameInputController.text.trim();
-                              final RegExp usernamePattern =
-                                  RegExp(r'^[a-zA-Z0-9]+$');
-                              if (username.isNotEmpty) {
-                                await context
-                                    .read<UserCubit>()
-                                    .addUser(username);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(
-                                          'Username must contain only letters and numbers')),
-                                );
-                              }
-                            },
-                            child: Text('Register'),
+              Column(
+                children: [
+                  TextField(
+                    onTapOutside: (event) =>
+                        FocusManager.instance.primaryFocus?.unfocus(),
+                    controller: _usernameInputController,
+                    decoration:
+                        InputDecoration(hintText: 'Enter your username'),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  BlocConsumer<UserCubit, UserState>(
+                    listener: (context, userState) {
+                      if (userState is UserRegistered) {
+                        Navigator.pushReplacementNamed(context, '/main-screen');
+                      } else if (userState is UserRegistrationError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(userState.message),
                           ),
-                        ),
-                      ],
-                    );
-                  } else if (userState is UserRegistered) {
-                    return Text(
-                        'User already registered, redirecting to main screen');
-                  } else {
-                    return Text('ERROR: Unexpected User State'); //
-                  }
-                },
+                        );
+                      }
+                    },
+                    builder: (context, userState) {
+                      if (userState is UserBeingRegistered) {
+                        return CircularProgressIndicator();
+                      } else if (userState is UserNotRegistered ||
+                          userState is UserRegistrationError) {
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  final String username =
+                                      _usernameInputController.text.trim();
+                                  final RegExp usernamePattern =
+                                      RegExp(r'^[a-zA-Z0-9]+$');
+                                  if (username.isNotEmpty) {
+                                    await context
+                                        .read<UserCubit>()
+                                        .addUser(username);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'Username must contain only letters and numbers')),
+                                    );
+                                  }
+                                },
+                                child: Text('Register'),
+                              ),
+                            ),
+                          ],
+                        );
+                      } else if (userState is UserRegistered) {
+                        return Text(
+                            'User already registered, redirecting to main screen');
+                      } else {
+                        return Text('ERROR: Unexpected User State'); //
+                      }
+                    },
+                  ),
+                ],
               )
             ],
           ),

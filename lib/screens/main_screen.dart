@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chess/screens/create_game_screen.dart';
 import 'package:flutter_chess/screens/invites_screen.dart';
-import 'package:flutter_chess/screens/room_screen.dart';
+import 'package:flutter_chess/screens/lounge_screen.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -19,7 +19,7 @@ class MainScreen extends StatelessWidget {
             ],
           ),
           body: TabBarView(
-            children: [RoomScreen(), CreateGameScreen(), InvitesScreen()],
+            children: [LoungeScreen(), CreateGameScreen(), InvitesScreen()],
           )),
     );
   }
