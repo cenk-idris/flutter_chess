@@ -27,8 +27,8 @@ class LoungeScreen extends StatelessWidget {
                       ...lounge.map((room) {
                         return Card(
                           child: ListTile(
-                            title: Text(room.roomName),
-                            subtitle: Text(room.owner.username),
+                            title: Text('Room: ${room.roomName}'),
+                            subtitle: Text('Host name: ${room.owner.username}'),
                           ),
                         );
                       })
