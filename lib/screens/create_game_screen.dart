@@ -48,7 +48,7 @@ class CreateGameScreen extends StatelessWidget {
                         child: BlocConsumer<RoomCubit, RoomState>(
                           listener: (context, roomState) {
                             if (roomState is RoomLoaded) {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => RoomDetailScreen(

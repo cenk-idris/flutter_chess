@@ -33,7 +33,7 @@ class LoungeScreen extends StatelessWidget {
                                   ? () {
                                       print('Tile tappled: ${room.roomName}');
 
-                                      Navigator.push(
+                                      Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>

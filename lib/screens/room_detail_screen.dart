@@ -6,10 +6,29 @@ import '../blocs/room_cubit/room_cubit.dart';
 import '../blocs/user_cubit/user_cubit.dart';
 import '../models/room_model.dart';
 
-class RoomDetailScreen extends StatelessWidget {
+class RoomDetailScreen extends StatefulWidget {
   final Room room;
 
   const RoomDetailScreen({super.key, required this.room});
+
+  @override
+  State<RoomDetailScreen> createState() => _RoomDetailScreenState();
+}
+
+class _RoomDetailScreenState extends State<RoomDetailScreen> {
+  RoomCubit? _roomCubit;
+  @override
+  void dispose() {
+    context.read<RoomCubit>().cancelRoomGuestUpdates();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _roomCubit = context.read<RoomCubit>();
+    _roomCubit!.listenToRoomGuestUpdates(widget.room.roomId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +37,10 @@ class RoomDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Find your opponent'),
       ),
-      body: BlocBuilder<RoomCubit, RoomState>(
+      body: BlocConsumer<RoomCubit, RoomState>(
+        listener: (context, roomState) {},
         builder: (context, roomState) {
-          Room updatedRoom = room;
+          Room updatedRoom = widget.room;
           if (roomState is RoomLoaded) {
             updatedRoom = roomState.room;
             if (updatedRoom.guest != null) {
@@ -67,7 +87,10 @@ class RoomDetailScreen extends StatelessWidget {
                                 CircularProgressIndicator(),
                                 SizedBox(height: 25.0),
                                 ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    context.read<RoomCubit>().leaveRoom(
+                                        updatedRoom, updatedRoom.guest!);
+                                  },
                                   child: Text('Leave room'),
                                 )
                               ],
@@ -92,9 +115,22 @@ class RoomDetailScreen extends StatelessWidget {
                     builder: (context, userState) {
                       if (userState is UserRegistered &&
                           userState.user.uuid == updatedRoom.owner.uuid) {
-                        return ElevatedButton(
-                          onPressed: updatedRoom.guest != null ? () {} : null,
-                          child: Text('Start Game'),
+                        return Column(
+                          children: [
+                            ElevatedButton(
+                              onPressed:
+                                  updatedRoom.guest != null ? () {} : null,
+                              child: Text('Start Game'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                context
+                                    .read<RoomCubit>()
+                                    .leaveRoom(updatedRoom, userState.user);
+                              },
+                              child: Text('Leave room'),
+                            )
+                          ],
                         );
                       } else if (userState is UserRegistered &&
                           updatedRoom.guest == null) {

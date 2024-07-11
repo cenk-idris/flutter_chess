@@ -21,26 +21,47 @@ class RoomCubit extends Cubit<RoomState> {
   RoomCubit() : super(RoomInitial());
 
   StreamSubscription<DatabaseEvent>? _roomSubscription;
+  bool _isListenerSet = false;
+
+  void cancelRoomGuestUpdates() {
+    print('Was listener null before cancelling: ${_roomSubscription == null}');
+    _roomSubscription?.cancel();
+    _isListenerSet = false;
+  }
 
   void listenToRoomGuestUpdates(String roomId) async {
-    _roomSubscription?.cancel();
-    _roomSubscription =
-        _firebaseDB.child('rooms/$roomId/guest').onValue.listen((event) async {
-      if (event.snapshot.value != null) {
-        //emit(RoomLoading());
-        final roomSnapshot = await _firebaseDB.child('rooms/$roomId').once();
-        if (roomSnapshot.snapshot.value != null) {
-          print(
-              'Did host received a new guest?: ${roomSnapshot.snapshot.value.toString()}');
-          final roomData =
-              Map<String, dynamic>.from(roomSnapshot.snapshot.value as dynamic);
-          final updatedRoom = Room.fromRTDB(roomData);
-          //print(updatedRoom.guest?.username);
+    //emit(RoomLoading());
+    if (_isListenerSet) return;
+    _isListenerSet = true;
 
-          emit(RoomLoaded(updatedRoom));
+    try {
+      print("Setting up listener for room $roomId");
+      _roomSubscription?.cancel();
+      _roomSubscription = _firebaseDB
+          .child('rooms/$roomId/guest')
+          .onValue
+          .listen((event) async {
+        if (event.snapshot.value != null) {
+          //emit(RoomLoading());
+          final roomSnapshot = await _firebaseDB.child('rooms/$roomId').once();
+          if (roomSnapshot.snapshot.value != null) {
+            print(
+                'Did host received a new guest?: ${roomSnapshot.snapshot.value.toString()}');
+            final roomData = Map<String, dynamic>.from(
+                roomSnapshot.snapshot.value as dynamic);
+            final updatedRoom = Room.fromRTDB(roomData);
+            //print(updatedRoom.guest?.username);
+
+            emit(RoomLoaded(updatedRoom));
+          }
         }
-      }
-    });
+      });
+    } on FirebaseException catch (e) {
+      print('FirebaseException: ${e.toString()}');
+    } catch (e) {
+      print(e.toString());
+      throw Exception(e.toString());
+    }
   }
 
   Future<void> createRoom(Room room) async {
@@ -48,18 +69,34 @@ class RoomCubit extends Cubit<RoomState> {
       emit(RoomLoading());
       await _databaseService.addRoomToDB(room);
       emit(RoomLoaded(room));
-      listenToRoomGuestUpdates(room.roomId);
+      //listenToRoomGuestUpdates(room.roomId);
     } catch (e) {
       throw Exception(e);
     }
   }
 
+  Future<void> leaveRoom(Room room, User user) async {
+    try {
+      if (room.owner.uuid == user.uuid) {
+        // Host wants to leave the room
+        // so guest also must be removed
+        // and room must be disposed
+        print('Host wants to dispose the room');
+      } else {
+        // Guest wants to leave the room
+        print('Guest want to leave the room');
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   Future<void> updateRoomGuest(Room room, User user) async {
     try {
-      emit(RoomLoading());
+      //emit(RoomLoading());
       final updatedRoom = room.copyWith(guest: user);
       await _databaseService.updateRoomInDB(updatedRoom);
-      emit(RoomLoaded(updatedRoom));
+      //emit(RoomLoaded(updatedRoom));
     } on FirebaseException catch (e) {
       print('Firebase Exception: $e');
     } catch (e) {

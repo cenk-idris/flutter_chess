@@ -13,7 +13,7 @@ final class RoomLoaded extends RoomState {
   RoomLoaded(this.room);
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [room];
 }
 
 final class RoomLoading extends RoomState {}
