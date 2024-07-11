@@ -1,9 +1,10 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chess/models/user_model.dart';
 import 'package:flutter_chess/services/firebase_RTDB_service.dart';
 import 'package:uuid/uuid.dart';
 
-class Room {
+class Room extends Equatable {
   final User owner;
   final String roomName;
   final String roomId;
@@ -19,12 +20,36 @@ class Room {
   });
 
   factory Room.fromRTDB(Map<String, dynamic> data) {
-    User user = User(data['owner']['username'], Uuid().v4());
-    user.uuid = data['owner']['uuid'];
+    User user = User(data['owner']['username'], data['owner']['uuid']);
+    User? guest;
+    if (data['guest'] != null) {
+      String guestUsername = data['guest']['username'];
+      String guestUuid = data['guest']['uuid'];
+      guest = User(guestUsername, guestUuid);
+    }
     return Room(
       owner: user,
+      guest: guest,
       roomName: data['room_name'],
       roomId: data['room_id'],
     );
   }
+
+  // Method to create a copy of Room with updated fields
+  Room copyWith({
+    User? owner,
+    String? roomName,
+    String? roomId,
+    User? guest,
+  }) {
+    return Room(
+      owner: owner ?? this.owner,
+      roomName: roomName ?? this.roomName,
+      roomId: roomId ?? this.roomId,
+      guest: guest ?? this.guest,
+    );
+  }
+
+  @override
+  List<Object?> get props => [owner, roomName, roomId, guest];
 }

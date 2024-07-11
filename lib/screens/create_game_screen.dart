@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chess/blocs/user_cubit/user_cubit.dart';
+import 'package:flutter_chess/screens/room_detail_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -47,7 +48,11 @@ class CreateGameScreen extends StatelessWidget {
                         child: BlocConsumer<RoomCubit, RoomState>(
                           listener: (context, roomState) {
                             if (roomState is RoomLoaded) {
-                              Navigator.pushNamed(context, '/room-detail');
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => RoomDetailScreen(
+                                          room: roomState.room)));
                             } else if (roomState is RoomError) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(roomState.message)),

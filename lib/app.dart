@@ -23,7 +23,6 @@ class ChessApp extends StatelessWidget {
       routes: {
         '/registration': (context) => RegistrationScreen(),
         '/main-screen': (context) => MainScreen(),
-        '/room-detail': (context) => RoomDetailScreen(),
       },
     );
   }

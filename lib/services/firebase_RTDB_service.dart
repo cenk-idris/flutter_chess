@@ -40,4 +40,20 @@ class DatabaseService {
       throw Exception(e);
     }
   }
+
+  Future<void> updateRoomInDB(Room room) async {
+    final roomsRef = database.child(kRoomsPath);
+    try {
+      await roomsRef.child(room.roomId).update({
+        'guest': {
+          'username': room.guest?.username,
+          'uuid': room.guest?.uuid,
+        }
+      });
+    } on FirebaseException catch (e) {
+      print('Firebase Exception: $e');
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }

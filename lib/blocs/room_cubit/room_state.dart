@@ -11,6 +11,9 @@ final class RoomInitial extends RoomState {}
 final class RoomLoaded extends RoomState {
   final Room room;
   RoomLoaded(this.room);
+
+  @override
+  List<Object> get props => [];
 }
 
 final class RoomLoading extends RoomState {}

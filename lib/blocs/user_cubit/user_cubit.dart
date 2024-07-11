@@ -19,7 +19,7 @@ class UserCubit extends Cubit<UserState> {
   List<Invite> _invites = [];
   List<Invite> get invites => _invites;
 
-  late StreamSubscription _invitesSubscription;
+  //late StreamSubscription _invitesSubscription;
 
   final _firebaseDb = FirebaseDatabase.instance.ref();
 
@@ -31,7 +31,7 @@ class UserCubit extends Cubit<UserState> {
       final User newUser = User(username, Uuid().v4());
       await DatabaseService().addUserToDB(newUser);
       _user = newUser;
-      _listenToInvitesForCurrentUser();
+      //_listenToInvitesForCurrentUser();
       emit(UserRegistered(newUser));
     } on FirebaseException catch (e) {
       print('FireException: $e');
@@ -39,15 +39,15 @@ class UserCubit extends Cubit<UserState> {
     } catch (e) {
       emit(UserRegistrationError(e.toString()));
     }
-    print(user?.username);
+    //print(user?.username);
   }
 
-  void _listenToInvitesForCurrentUser() async {
-    _invitesSubscription = _firebaseDb
-        .child('users/${user?.uuid}/invites')
-        .onValue
-        .listen((event) {
-      print('something changed in invites');
-    });
-  }
+  // void _listenToInvitesForCurrentUser() async {
+  //   _invitesSubscription = _firebaseDb
+  //       .child('users/${user?.uuid}/invites')
+  //       .onValue
+  //       .listen((event) {
+  //     print('something changed in invites');
+  //   });
+  // }
 }
