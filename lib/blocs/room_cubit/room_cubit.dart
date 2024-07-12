@@ -9,6 +9,7 @@ import 'package:meta/meta.dart';
 import 'package:chess/chess.dart' as chesslib;
 import 'package:simple_chess_board/simple_chess_board.dart';
 
+import '../../models/game_model.dart';
 import '../../models/room_model.dart';
 import '../../models/user_model.dart';
 
@@ -107,6 +108,21 @@ class RoomCubit extends Cubit<RoomState> {
 
   Future<void> initializeGameInTheRoom(Room room) async {
     print('Host is initializing the game');
+    final player1 = room.owner;
+    final player2 = room.guest!;
+    player1.color = 'white';
+    player2.color = 'black';
+    Game newGame = Game(
+      players: {
+        'player1': player1,
+        'player2': player2,
+      },
+      status: 'started',
+      currentMove: 'white',
+      fen: chesslib.Chess.DEFAULT_POSITION,
+    );
+    final gameAddedRoom = room.copyWith(game: newGame);
+    await _databaseService.updateRoomInDB(gameAddedRoom);
   }
 
   @override

@@ -4,12 +4,14 @@ import 'package:flutter_chess/models/user_model.dart';
 import 'package:flutter_chess/services/firebase_RTDB_service.dart';
 import 'package:uuid/uuid.dart';
 
+import 'game_model.dart';
+
 class Room extends Equatable {
   final User owner;
   final String roomName;
   final String roomId;
   final User? guest;
-  //Game? game;
+  final Game? game;
   final DatabaseService _databaseService = DatabaseService();
 
   Room({
@@ -17,6 +19,7 @@ class Room extends Equatable {
     required this.roomName,
     required this.roomId,
     this.guest,
+    this.game,
   });
 
   factory Room.fromRTDB(Map<String, dynamic> data) {
@@ -27,6 +30,7 @@ class Room extends Equatable {
       String guestUuid = data['guest']['uuid'];
       guest = User(guestUsername, guestUuid);
     }
+
     return Room(
       owner: user,
       guest: guest,
@@ -41,15 +45,27 @@ class Room extends Equatable {
     String? roomName,
     String? roomId,
     User? guest,
+    Game? game,
   }) {
     return Room(
       owner: owner ?? this.owner,
       roomName: roomName ?? this.roomName,
       roomId: roomId ?? this.roomId,
       guest: guest ?? this.guest,
+      game: game ?? this.game,
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'owner': owner.toJson(includeColor: false),
+      'room_name': roomName,
+      'room_id': roomId,
+      'guest': guest?.toJson(includeColor: false),
+      'game': game?.toJson(),
+    };
+  }
+
   @override
-  List<Object?> get props => [owner, roomName, roomId, guest];
+  List<Object?> get props => [owner, roomName, roomId, guest, game];
 }

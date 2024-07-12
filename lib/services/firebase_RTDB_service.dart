@@ -22,6 +22,8 @@ class DatabaseService {
     }
   }
 
+  //Future<void> addGameToTheRoomInDB
+
   Future<void> addRoomToDB(Room room) async {
     final roomsRef = database.child(kRoomsPath);
     try {
@@ -43,13 +45,9 @@ class DatabaseService {
 
   Future<void> updateRoomInDB(Room room) async {
     final roomsRef = database.child(kRoomsPath);
+    print(room.toJson());
     try {
-      await roomsRef.child(room.roomId).update({
-        'guest': {
-          'username': room.guest?.username,
-          'uuid': room.guest?.uuid,
-        }
-      });
+      await roomsRef.child(room.roomId).update(room.toJson());
     } on FirebaseException catch (e) {
       print('Firebase Exception: $e');
     } catch (e) {

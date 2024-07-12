@@ -8,5 +8,24 @@ class User {
   String? color;
   List<Invite> invites = [];
 
-  User(this.username, this.uuid);
+  User(this.username, this.uuid, [this.color]);
+
+  factory User.fromRTDB(Map<String, dynamic> data) {
+    return User(
+      data['username'],
+      data['uuid'],
+      data['color'],
+    );
+  }
+
+  Map<String, dynamic> toJson({bool includeColor = true}) {
+    final data = {
+      'username': username,
+      'uuid': uuid,
+    };
+    if (includeColor && color != null) {
+      data['color'] = color!;
+    }
+    return data;
+  }
 }
