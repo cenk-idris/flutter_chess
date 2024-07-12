@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:flutter_chess/services/firebase_RTDB_service.dart';
 import 'package:meta/meta.dart';
 import 'package:chess/chess.dart' as chesslib;
@@ -22,24 +23,57 @@ class RoomCubit extends Cubit<RoomState> {
 
   RoomCubit() : super(RoomInitial());
 
-  StreamSubscription<DatabaseEvent>? _roomSubscription;
-  bool _isListenerSet = false;
+  StreamSubscription<DatabaseEvent>? _guestSubscription;
+  bool _isGuestListenerSet = false;
+
+  StreamSubscription<DatabaseEvent>? _gameSubscription;
+  bool _isGameListenerSet = false;
 
   void cancelRoomGuestUpdates() {
-    print('Was listener null before cancelling: ${_roomSubscription == null}');
-    _roomSubscription?.cancel();
-    _isListenerSet = false;
+    print('Was listener null before cancelling: ${_guestSubscription == null}');
+    _guestSubscription?.cancel();
+    _isGameListenerSet = false;
+  }
+
+  void listenToRoomGameUpdates(String roomId) async {
+    if (_isGameListenerSet) return;
+    _isGameListenerSet = true;
+
+    try {
+      print('Setting up game listener for room $roomId');
+      _guestSubscription?.cancel();
+      _guestSubscription =
+          _firebaseDB.child('rooms/$roomId/game').onValue.listen((event) async {
+        if (event.snapshot.value != null) {
+          final roomSnapshot = await _firebaseDB.child('rooms/$roomId').once();
+          if (roomSnapshot.snapshot.value != null) {
+            print(
+                'Game state updated: ${roomSnapshot.snapshot.value.toString()}');
+            final roomData = Map<String, dynamic>.from(
+                roomSnapshot.snapshot.value as dynamic);
+            final updatedRoom = Room.fromRTDB(roomData);
+
+            emit(GameLoaded(updatedRoom));
+          }
+        }
+      });
+    } on FirebaseException catch (e) {
+      print('Firebase exception: ${e.toString()}');
+      throw Exception(e.toString());
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   void listenToRoomGuestUpdates(String roomId) async {
     //emit(RoomLoading());
-    if (_isListenerSet) return;
-    _isListenerSet = true;
+    if (_isGuestListenerSet) return;
+    _isGuestListenerSet = true;
 
     try {
-      print("Setting up listener for room $roomId");
-      _roomSubscription?.cancel();
-      _roomSubscription = _firebaseDB
+      print("Setting up guest listener for room $roomId");
+      _guestSubscription?.cancel();
+      _guestSubscription = _firebaseDB
           .child('rooms/$roomId/guest')
           .onValue
           .listen((event) async {
@@ -127,7 +161,7 @@ class RoomCubit extends Cubit<RoomState> {
 
   @override
   Future<void> close() {
-    _roomSubscription?.cancel();
+    _guestSubscription?.cancel();
     return super.close();
   }
 }
