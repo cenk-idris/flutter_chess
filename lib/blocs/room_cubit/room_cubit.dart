@@ -53,6 +53,17 @@ class RoomCubit extends Cubit<RoomState> {
           _firebaseDB.child('rooms/$roomId/game').onValue.listen((event) async {
         if (event.snapshot.value != null) {
           print('Yoo game is updated: ${event.snapshot.value.toString()}');
+          _firebaseDB.child('rooms/$roomId').once().then((roomSnapshot) {
+            if (roomSnapshot != null) {
+              print(
+                  'Grabbed latest room upon game change: ${roomSnapshot.snapshot.value.toString()}');
+              final roomData = Map<String, dynamic>.from(
+                  roomSnapshot.snapshot.value as dynamic);
+              final updatedRoom = Room.fromRTDB(roomData);
+
+              emit(GameLoaded(updatedRoom));
+            }
+          });
         }
       });
     } catch (e) {
@@ -77,8 +88,8 @@ class RoomCubit extends Cubit<RoomState> {
           //emit(RoomLoading());
           final roomSnapshot = await _firebaseDB.child('rooms/$roomId').once();
           if (roomSnapshot.snapshot.value != null) {
-            print(
-                'Did host received a new guest?: ${roomSnapshot.snapshot.value.toString()}');
+            // print(
+            //     'Did host received a new guest?: ${roomSnapshot.snapshot.value.toString()}');
             final roomData = Map<String, dynamic>.from(
                 roomSnapshot.snapshot.value as dynamic);
             final updatedRoom = Room.fromRTDB(roomData);

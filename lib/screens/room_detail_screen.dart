@@ -20,8 +20,8 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
   RoomCubit? _roomCubit;
   @override
   void dispose() {
-    context.read<RoomCubit>().cancelRoomGuestUpdates();
-    context.read<RoomCubit>().cancelRoomGameUpdates();
+    _roomCubit!.cancelRoomGuestUpdates();
+    _roomCubit!.cancelRoomGameUpdates();
     super.dispose();
   }
 
@@ -43,6 +43,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
       body: BlocConsumer<RoomCubit, RoomState>(
         listener: (context, roomState) {
           if (roomState is GameLoaded) {
+            print('Lezzz goo');
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => GameScreen()));
           }
