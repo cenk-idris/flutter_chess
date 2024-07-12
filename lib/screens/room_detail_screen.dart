@@ -21,6 +21,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
   @override
   void dispose() {
     context.read<RoomCubit>().cancelRoomGuestUpdates();
+    context.read<RoomCubit>().cancelRoomGameUpdates();
     super.dispose();
   }
 
@@ -29,6 +30,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
     super.initState();
     _roomCubit = context.read<RoomCubit>();
     _roomCubit!.listenToRoomGuestUpdates(widget.room.roomId);
+    _roomCubit!.listenToRoomGameUpdates(widget.room.roomId);
   }
 
   @override

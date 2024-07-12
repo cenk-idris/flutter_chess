@@ -35,32 +35,28 @@ class RoomCubit extends Cubit<RoomState> {
     _isGameListenerSet = false;
   }
 
+  void cancelRoomGameUpdates() {
+    print(
+        'Game listener was null before cancelling: ${_gameSubscription == null}');
+    _gameSubscription?.cancel();
+    _isGameListenerSet = false;
+  }
+
   void listenToRoomGameUpdates(String roomId) async {
     if (_isGameListenerSet) return;
     _isGameListenerSet = true;
 
     try {
-      print('Setting up game listener for room $roomId');
-      _guestSubscription?.cancel();
-      _guestSubscription =
+      print('Setting up game listener for room ${roomId}');
+      await _gameSubscription?.cancel();
+      _gameSubscription =
           _firebaseDB.child('rooms/$roomId/game').onValue.listen((event) async {
         if (event.snapshot.value != null) {
-          final roomSnapshot = await _firebaseDB.child('rooms/$roomId').once();
-          if (roomSnapshot.snapshot.value != null) {
-            print(
-                'Game state updated: ${roomSnapshot.snapshot.value.toString()}');
-            final roomData = Map<String, dynamic>.from(
-                roomSnapshot.snapshot.value as dynamic);
-            final updatedRoom = Room.fromRTDB(roomData);
-
-            emit(GameLoaded(updatedRoom));
-          }
+          print('Yoo game is updated: ${event.snapshot.value.toString()}');
         }
       });
-    } on FirebaseException catch (e) {
-      print('Firebase exception: ${e.toString()}');
-      throw Exception(e.toString());
     } catch (e) {
+      print(e.toString());
       throw Exception(e.toString());
     }
   }
@@ -72,7 +68,7 @@ class RoomCubit extends Cubit<RoomState> {
 
     try {
       print("Setting up guest listener for room $roomId");
-      _guestSubscription?.cancel();
+      await _guestSubscription?.cancel();
       _guestSubscription = _firebaseDB
           .child('rooms/$roomId/guest')
           .onValue
