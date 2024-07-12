@@ -25,3 +25,11 @@ final class RoomError extends RoomState {
   @override
   List<Object> get props => [message];
 }
+
+final class GameStarted extends RoomState {
+  final Room room;
+  GameStarted(this.room);
+
+  @override
+  List<Object> get props => [room];
+}

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -7,6 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_chess/services/firebase_RTDB_service.dart';
 import 'package:meta/meta.dart';
+import 'package:chess/chess.dart' as chesslib;
+import 'package:simple_chess_board/simple_chess_board.dart';
 
 import '../../models/room_model.dart';
 import '../../models/user_model.dart';
@@ -102,6 +103,10 @@ class RoomCubit extends Cubit<RoomState> {
     } catch (e) {
       throw Exception(e.toString());
     }
+  }
+
+  Future<void> initializeGameInTheRoom(Room room) async {
+    print('Host is initializing the game');
   }
 
   @override

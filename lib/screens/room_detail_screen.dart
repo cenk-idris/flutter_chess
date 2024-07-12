@@ -86,13 +86,16 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                                 SizedBox(height: 10.0),
                                 CircularProgressIndicator(),
                                 SizedBox(height: 25.0),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    context.read<RoomCubit>().leaveRoom(
-                                        updatedRoom, updatedRoom.guest!);
-                                  },
-                                  child: Text('Leave room'),
-                                )
+                                updatedRoom.owner.uuid !=
+                                        context.read<UserCubit>().user!.uuid
+                                    ? ElevatedButton(
+                                        onPressed: () {
+                                          context.read<RoomCubit>().leaveRoom(
+                                              updatedRoom, updatedRoom.guest!);
+                                        },
+                                        child: Text('Leave room'),
+                                      )
+                                    : Container()
                               ],
                             )
                           : Row(
@@ -118,8 +121,14 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                         return Column(
                           children: [
                             ElevatedButton(
-                              onPressed:
-                                  updatedRoom.guest != null ? () {} : null,
+                              onPressed: updatedRoom.guest != null
+                                  ? () {
+                                      print('Host wants to start');
+                                      context
+                                          .read<RoomCubit>()
+                                          .initializeGameInTheRoom(updatedRoom);
+                                    }
+                                  : null,
                               child: Text('Start Game'),
                             ),
                             ElevatedButton(

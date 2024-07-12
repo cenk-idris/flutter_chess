@@ -41,6 +41,8 @@ dependencies:
   uuid: ^4.4.0
   firebase_database: ^11.0.3
   font_awesome_flutter: ^10.7.0
+  chess: ^0.8.1
+  simple_chess_board: ^1.3.0
 
 dev_dependencies:
   flutter_test:
