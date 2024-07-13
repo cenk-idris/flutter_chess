@@ -167,6 +167,36 @@ class RoomCubit extends Cubit<RoomState> {
     await _databaseService.updateRoomInDB(gameAddedRoom);
   }
 
+  Future<void> tryMakingMove(Room room, ShortMove move) async {
+    try {
+      final chess = chesslib.Chess.fromFEN(room.game!.fen);
+      print(chess.turn);
+      print('initFen: ${room.game!.fen}');
+      final success = chess.move(<String, String?>{
+        'from': move.from,
+        'to': move.to,
+        'promotion': move.promotion?.name,
+      });
+      if (success) {
+        print('MovedFen: ${room.game!.fen}');
+        print(chess.turn);
+        final updatedRoom = room.copyWith(
+          game: room.game!.copyWith(
+              fen: chess.fen,
+              currentMove:
+                  chess.turn == chesslib.Color.BLACK ? 'black' : 'white'),
+        );
+        await _databaseService.updateRoomInDB(updatedRoom);
+      }
+    } on FirebaseException catch (e) {
+      print('FirebaseException: ${e.toString()}');
+      throw Exception(e.toString());
+    } catch (e) {
+      print(e.toString());
+      emit(RoomError(e.toString()));
+    }
+  }
+
   @override
   Future<void> close() {
     _guestSubscription?.cancel();

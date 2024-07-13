@@ -2,12 +2,12 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_chess/models/user_model.dart';
 
 class Game extends Equatable {
-  Map<String, User> players;
-  String status;
-  String currentMove;
-  String fen;
+  final Map<String, User> players;
+  final String status;
+  final String currentMove;
+  final String fen;
 
-  Game(
+  const Game(
       {required this.players,
       required this.status,
       required this.currentMove,
@@ -35,6 +35,20 @@ class Game extends Equatable {
     );
 
     //data[roomId]['game']
+  }
+
+  Game copyWith({
+    Map<String, User>? players,
+    String? status,
+    String? currentMove,
+    String? fen,
+  }) {
+    return Game(
+      players: players ?? this.players,
+      status: status ?? this.status,
+      currentMove: currentMove ?? this.currentMove,
+      fen: fen ?? this.fen,
+    );
   }
 
   Map<String, dynamic> toJson() {

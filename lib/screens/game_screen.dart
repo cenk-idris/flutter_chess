@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simple_chess_board/models/short_move.dart';
+import 'package:simple_chess_board/simple_chess_board.dart';
 
 import '../blocs/room_cubit/room_cubit.dart';
 import '../blocs/user_cubit/user_cubit.dart';
@@ -16,15 +18,67 @@ class GameScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Game Board'),
       ),
-      body: BlocBuilder<RoomCubit, RoomState>(
-        builder: (context, roomState) {
-          return BlocBuilder<UserCubit, UserState>(
-            builder: (context, userState) {
-              return Center(
-                child: Text(roomState.toString()),
-              );
-            },
-          );
+      body: BlocBuilder<UserCubit, UserState>(
+        builder: (context, userState) {
+          if (userState is UserRegistered) {
+            final user = userState.user;
+            return BlocBuilder<RoomCubit, RoomState>(
+              builder: (context, roomState) {
+                if (roomState is GameLoaded) {
+                  final game = roomState.room.game!;
+                  final myColor = game.players.entries
+                      .firstWhere((entry) => entry.value.uuid == user.uuid)
+                      .value
+                      .color;
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Current turn: ${game.currentMove}'),
+                        SizedBox(height: 20.0),
+                        SimpleChessBoard(
+                          fen: game.fen,
+                          blackSideAtBottom: myColor == 'black',
+                          whitePlayerType: myColor == 'white'
+                              ? PlayerType.human
+                              : PlayerType.computer,
+                          blackPlayerType: myColor == 'black'
+                              ? PlayerType.human
+                              : PlayerType.computer,
+                          onMove: ({required ShortMove move}) {
+                            context.read<RoomCubit>().tryMakingMove(room, move);
+                          },
+                          onPromote: () async {
+                            return null;
+                          },
+                          onPromotionCommited: ({
+                            required ShortMove moveDone,
+                            required PieceType pieceType,
+                          }) {},
+                          chessBoardColors: ChessBoardColors()
+                            ..lightSquaresColor = Colors.blue.shade100
+                            ..darkSquaresColor = Colors.blue.shade600
+                            ..coordinatesZoneColor = Colors.blue
+                            ..lastMoveArrowColor = Colors.cyan
+                            ..startSquareColor = Colors.orange
+                            ..endSquareColor = Colors.green
+                            ..circularProgressBarColor = Colors.red
+                            ..coordinatesColor = Colors.white,
+                          showCoordinatesZone: true,
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return Center(child: CircularProgressIndicator());
+                }
+              },
+            );
+          } else if (userState is UserRegistrationError) {
+            return Center(child: Text('User Error: ${userState.message}'));
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
         },
       ),
     );
