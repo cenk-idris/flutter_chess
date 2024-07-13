@@ -7,11 +7,12 @@ class Game extends Equatable {
   final String currentMove;
   final String fen;
 
-  const Game(
-      {required this.players,
-      required this.status,
-      required this.currentMove,
-      required this.fen});
+  const Game({
+    required this.players,
+    required this.status,
+    required this.currentMove,
+    required this.fen,
+  });
 
   factory Game.fromRTDB(Map<String, dynamic> data) {
     Map<String, User> players = {};

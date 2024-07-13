@@ -51,6 +51,7 @@ class _GameScreenState extends State<GameScreen> {
                       .firstWhere((entry) => entry.value.uuid == user.uuid)
                       .value
                       .color;
+
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
