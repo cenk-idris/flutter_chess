@@ -171,16 +171,15 @@ class RoomCubit extends Cubit<RoomState> {
 
   Future<void> tryMakingMove(Room room, ShortMove move) async {
     try {
-      final chess = chesslib.Chess();
-      chess.load(room.game!.fen);
+      final chess = chesslib.Chess.fromFEN(room.game!.fen);
       //print(chess.turn);
       print(
           'Attempting move from ${move.from} to ${move.to} with promotion ${move.promotion?.name}');
       print('Turn before move: ${chess.turn}');
-      chess.turn = room.game!.currentMove == 'black'
-          ? chesslib.Color.BLACK
-          : chesslib.Color.WHITE;
-      print('Turn before move after logicy magic: ${chess.turn}');
+      // chess.turn = room.game!.currentMove == 'black'
+      //     ? chesslib.Color.BLACK
+      //     : chesslib.Color.WHITE;
+      // print('Turn before move after logicy magic: ${chess.turn}');
 
       final success = chess.move(<String, String?>{
         'from': move.from,
