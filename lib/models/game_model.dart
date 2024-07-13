@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_chess/models/user_model.dart';
 
-class Game {
+class Game extends Equatable {
   Map<String, User> players;
   String status;
   String currentMove;
@@ -12,24 +13,25 @@ class Game {
       required this.currentMove,
       required this.fen});
 
-  factory Game.fromRTDB(Map<String, dynamic> data, String roomId) {
+  factory Game.fromRTDB(Map<String, dynamic> data) {
     Map<String, User> players = {};
 
-    print('from Game.fromRTDB: ${data[roomId]['game'].toString()}');
+    print('from Game.fromRTDB: ${data['game'].toString()}');
 
-    data['players'].forEach((key, value) {
+    data['game']['players'].forEach((key, value) {
       players[key] = User.fromRTDB({
         'username': value['username'],
         'color': value['color'],
         'uuid': value['uuid'],
       });
     });
+    //print('did this userFromRTDB work?: ${players.toString()}');
 
     return Game(
       players: players,
-      status: data['status'],
-      currentMove: data['board_state']['current_move'],
-      fen: data['board_state']['fen'],
+      status: data['game']['status'],
+      currentMove: data['game']['current_move'],
+      fen: data['game']['fen'],
     );
 
     //data[roomId]['game']
@@ -43,4 +45,7 @@ class Game {
       'fen': fen,
     };
   }
+
+  @override
+  List<Object?> get props => [players, status, currentMove, fen];
 }

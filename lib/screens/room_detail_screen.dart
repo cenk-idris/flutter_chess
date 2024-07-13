@@ -43,9 +43,13 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
       body: BlocConsumer<RoomCubit, RoomState>(
         listener: (context, roomState) {
           if (roomState is GameLoaded) {
-            print('Lezzz goo');
+            print(roomState.toString());
             Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => GameScreen()));
+                context,
+                MaterialPageRoute(
+                    builder: (context) => GameScreen(
+                          room: roomState.room,
+                        )));
           }
         },
         builder: (context, roomState) {

@@ -23,7 +23,11 @@ class Room extends Equatable {
   });
 
   factory Room.fromRTDB(Map<String, dynamic> data) {
+    String roomId = data['room_id'];
+    String roomName = data['room_name'];
+
     User user = User(data['owner']['username'], data['owner']['uuid']);
+
     User? guest;
     if (data['guest'] != null) {
       String guestUsername = data['guest']['username'];
@@ -31,11 +35,17 @@ class Room extends Equatable {
       guest = User(guestUsername, guestUuid);
     }
 
+    Game? game;
+    if (data['game'] != null) {
+      game = Game.fromRTDB(data);
+    }
+
     return Room(
       owner: user,
       guest: guest,
-      roomName: data['room_name'],
-      roomId: data['room_id'],
+      roomName: roomName,
+      roomId: roomId,
+      game: game,
     );
   }
 

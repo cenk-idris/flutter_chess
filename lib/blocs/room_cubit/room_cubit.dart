@@ -60,6 +60,7 @@ class RoomCubit extends Cubit<RoomState> {
               final roomData = Map<String, dynamic>.from(
                   roomSnapshot.snapshot.value as dynamic);
               final updatedRoom = Room.fromRTDB(roomData);
+              print('But what did you grab: ${updatedRoom.toJson()}');
 
               emit(GameLoaded(updatedRoom));
             }
