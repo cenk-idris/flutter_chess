@@ -45,7 +45,7 @@ class DatabaseService {
 
   Future<void> updateRoomInDB(Room room) async {
     final roomsRef = database.child(kRoomsPath);
-    print(room.toJson());
+    //print(room.toJson());
     try {
       await roomsRef.child(room.roomId).update(room.toJson());
     } on FirebaseException catch (e) {

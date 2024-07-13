@@ -7,10 +7,30 @@ import '../blocs/room_cubit/room_cubit.dart';
 import '../blocs/user_cubit/user_cubit.dart';
 import '../models/room_model.dart';
 
-class GameScreen extends StatelessWidget {
+class GameScreen extends StatefulWidget {
   final Room room;
 
   const GameScreen({super.key, required this.room});
+
+  @override
+  State<GameScreen> createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
+  RoomCubit? _roomCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _roomCubit = context.read<RoomCubit>();
+    print('GameScreen Game listener: ${_roomCubit!.isGameListenerPaused}');
+  }
+
+  @override
+  void dispose() {
+    //_roomCubit!.cancelRoomGameUpdates();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +45,8 @@ class GameScreen extends StatelessWidget {
             return BlocBuilder<RoomCubit, RoomState>(
               builder: (context, roomState) {
                 if (roomState is GameLoaded) {
-                  final game = roomState.room.game!;
+                  final updatedRoom = roomState.room;
+                  final game = updatedRoom.game!;
                   final myColor = game.players.entries
                       .firstWhere((entry) => entry.value.uuid == user.uuid)
                       .value
@@ -34,6 +55,7 @@ class GameScreen extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Text('Current fen: ${game.fen}'),
                         Text('Current turn: ${game.currentMove}'),
                         SizedBox(height: 20.0),
                         SimpleChessBoard(
@@ -46,7 +68,9 @@ class GameScreen extends StatelessWidget {
                               ? PlayerType.human
                               : PlayerType.computer,
                           onMove: ({required ShortMove move}) {
-                            context.read<RoomCubit>().tryMakingMove(room, move);
+                            context
+                                .read<RoomCubit>()
+                                .tryMakingMove(updatedRoom, move);
                           },
                           onPromote: () async {
                             return null;

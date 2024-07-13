@@ -18,10 +18,9 @@ class RoomDetailScreen extends StatefulWidget {
 
 class _RoomDetailScreenState extends State<RoomDetailScreen> {
   RoomCubit? _roomCubit;
+  //bool _hasNavigated = false;
   @override
   void dispose() {
-    _roomCubit!.cancelRoomGuestUpdates();
-    _roomCubit!.cancelRoomGameUpdates();
     super.dispose();
   }
 
@@ -43,7 +42,6 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
       body: BlocConsumer<RoomCubit, RoomState>(
         listener: (context, roomState) {
           if (roomState is GameLoaded) {
-            print(roomState.toString());
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(

@@ -16,7 +16,7 @@ class Game extends Equatable {
   factory Game.fromRTDB(Map<String, dynamic> data) {
     Map<String, User> players = {};
 
-    print('from Game.fromRTDB: ${data['game'].toString()}');
+    //print('from Game.fromRTDB: ${data['game'].toString()}');
 
     data['game']['players'].forEach((key, value) {
       players[key] = User.fromRTDB({

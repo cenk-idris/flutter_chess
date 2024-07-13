@@ -28,11 +28,13 @@ class RoomCubit extends Cubit<RoomState> {
 
   StreamSubscription<DatabaseEvent>? _gameSubscription;
   bool _isGameListenerSet = false;
+  bool get isGameListenerSet => _isGameListenerSet;
+  bool? get isGameListenerPaused => _gameSubscription?.isPaused;
 
   void cancelRoomGuestUpdates() {
     print('Was listener null before cancelling: ${_guestSubscription == null}');
     _guestSubscription?.cancel();
-    _isGameListenerSet = false;
+    _isGuestListenerSet = false;
   }
 
   void cancelRoomGameUpdates() {
@@ -52,15 +54,15 @@ class RoomCubit extends Cubit<RoomState> {
       _gameSubscription =
           _firebaseDB.child('rooms/$roomId/game').onValue.listen((event) async {
         if (event.snapshot.value != null) {
-          print('Yoo game is updated: ${event.snapshot.value.toString()}');
+          //print('Yoo game is updated: ${event.snapshot.value.toString()}');
           _firebaseDB.child('rooms/$roomId').once().then((roomSnapshot) {
             if (roomSnapshot != null) {
-              print(
-                  'Grabbed latest room upon game change: ${roomSnapshot.snapshot.value.toString()}');
+              // print(
+              //     'Grabbed latest room upon game change: ${roomSnapshot.snapshot.value.toString()}');
               final roomData = Map<String, dynamic>.from(
                   roomSnapshot.snapshot.value as dynamic);
               final updatedRoom = Room.fromRTDB(roomData);
-              print('But what did you grab: ${updatedRoom.toJson()}');
+              // print('But what did you grab: ${updatedRoom.toJson()}');
 
               emit(GameLoaded(updatedRoom));
             }
@@ -169,17 +171,25 @@ class RoomCubit extends Cubit<RoomState> {
 
   Future<void> tryMakingMove(Room room, ShortMove move) async {
     try {
-      final chess = chesslib.Chess.fromFEN(room.game!.fen);
-      print(chess.turn);
-      print('initFen: ${room.game!.fen}');
+      final chess = chesslib.Chess();
+      chess.load(room.game!.fen);
+      //print(chess.turn);
+      print(
+          'Attempting move from ${move.from} to ${move.to} with promotion ${move.promotion?.name}');
+      print('Turn before move: ${chess.turn}');
+      chess.turn = room.game!.currentMove == 'black'
+          ? chesslib.Color.BLACK
+          : chesslib.Color.WHITE;
+      print('Turn before move after logicy magic: ${chess.turn}');
+
       final success = chess.move(<String, String?>{
         'from': move.from,
         'to': move.to,
         'promotion': move.promotion?.name,
       });
       if (success) {
-        print('MovedFen: ${room.game!.fen}');
-        print(chess.turn);
+        //print('MovedFen: ${chess.fen}');
+        print('Turn after move: ${chess.turn}');
         final updatedRoom = room.copyWith(
           game: room.game!.copyWith(
               fen: chess.fen,
@@ -187,6 +197,8 @@ class RoomCubit extends Cubit<RoomState> {
                   chess.turn == chesslib.Color.BLACK ? 'black' : 'white'),
         );
         await _databaseService.updateRoomInDB(updatedRoom);
+      } else {
+        print('Invalid move bro');
       }
     } on FirebaseException catch (e) {
       print('FirebaseException: ${e.toString()}');
