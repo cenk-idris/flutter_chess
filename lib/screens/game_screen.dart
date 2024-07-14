@@ -157,7 +157,7 @@ class _GameScreenState extends State<GameScreen> {
                                 .tryMakingMove(updatedRoom, move);
                           },
                           onPromote: () async {
-                            return PieceType.queen;
+                            return handlePromotion(context);
                           },
                           onPromotionCommited: ({
                             required ShortMove moveDone,
