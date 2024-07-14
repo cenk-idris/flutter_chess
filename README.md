@@ -20,6 +20,11 @@ Flutter Chess is a Flutter application that allows users to create or join chess
 | ![userRegistration](/assets/screenshots/userRegistration.png) | ![Lounge](/assets/screenshots/lounge.png) | ![Room As Guest Can Join](/assets/screenshots/roomAsGuestCanJoin.png) |
 
 
+| Room As Host Waiting                                               | Room As Host Can Start                                                | Game Started                                         |
+|--------------------------------------------------------------------|-----------------------------------------------------------------------|------------------------------------------------------|
+| ![Room As Host Waiting](/assets/screenshots/roomAsHostWaiting.png) | ![Room As Host Can Start](/assets/screenshots/roomAsHostCanStart.png) | ![Game Started](/assets/screenshots/gameStarted.png) |
+
+
 ## Technologies Used
 
 - [Flutter](https://flutter.dev/)
