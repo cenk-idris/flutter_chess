@@ -32,6 +32,39 @@ class _GameScreenState extends State<GameScreen> {
     super.dispose();
   }
 
+  Future<PieceType?> handlePromotion(BuildContext context) {
+    final navigator = Navigator.of(context);
+    return showDialog<PieceType>(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text('Promotion'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text("Queen"),
+                onTap: () => navigator.pop(PieceType.queen),
+              ),
+              ListTile(
+                title: const Text("Rook"),
+                onTap: () => navigator.pop(PieceType.rook),
+              ),
+              ListTile(
+                title: const Text("Bishop"),
+                onTap: () => navigator.pop(PieceType.bishop),
+              ),
+              ListTile(
+                title: const Text("Knight"),
+                onTap: () => navigator.pop(PieceType.knight),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _showGameEndDialog(String result) {
     showDialog(
       context: context,
@@ -77,6 +110,15 @@ class _GameScreenState extends State<GameScreen> {
                     }
                     _showGameEndDialog(result);
                   }
+                  final myColor = game.players.entries
+                      .firstWhere((entry) => entry.value.uuid == user.uuid)
+                      .value
+                      .color;
+                  if (myColor == game.currentMove) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('CHOP CHOP, YOUR TURN!')),
+                    );
+                  }
                 }
               },
               builder: (context, roomState) {
@@ -115,12 +157,18 @@ class _GameScreenState extends State<GameScreen> {
                                 .tryMakingMove(updatedRoom, move);
                           },
                           onPromote: () async {
-                            return null;
+                            return PieceType.queen;
                           },
                           onPromotionCommited: ({
                             required ShortMove moveDone,
                             required PieceType pieceType,
-                          }) {},
+                          }) {
+                            print('promotion committed');
+                            moveDone.promotion = pieceType;
+                            context
+                                .read<RoomCubit>()
+                                .tryMakingMove(updatedRoom, moveDone);
+                          },
                           chessBoardColors: ChessBoardColors()
                             ..lightSquaresColor = Colors.blue.shade100
                             ..darkSquaresColor = Colors.blue.shade600
