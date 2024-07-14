@@ -125,7 +125,7 @@ Follow these steps to run the Flutter Chess app:
     fvm flutter run --debug
     ```
 
-9. You will be prompted to choose the available target device. Pick the Simulator's iOS instance you just launched.
+9. You will be prompted to choose the target device/platform. Pick the Simulator's iOS instance you just launched.
 
 10. Cross your fingers :)
 
