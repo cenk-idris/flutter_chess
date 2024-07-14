@@ -32,6 +32,26 @@ class _GameScreenState extends State<GameScreen> {
     super.dispose();
   }
 
+  void _showGameEndDialog(String result) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Game Over"),
+          content: Text(result),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the game screen
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +68,14 @@ class _GameScreenState extends State<GameScreen> {
                 if (roomState is GameLoaded) {
                   final game = roomState.room.game!;
                   if (game.isCheckmate || game.isDraw) {
-                    //print('Gotcha yoo azz');
+                    String result = '';
+                    if (game.isCheckmate) {
+                      result =
+                          '${game.winner?.username ?? 'Unknown'} wins by checkmate!';
+                    } else if (game.isDraw) {
+                      result = 'The game is a draw!';
+                    }
+                    _showGameEndDialog(result);
                   }
                 }
               },
