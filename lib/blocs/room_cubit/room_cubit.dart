@@ -187,13 +187,24 @@ class RoomCubit extends Cubit<RoomState> {
         'promotion': move.promotion?.name,
       });
       if (success) {
+        User? winner;
         //print('MovedFen: ${chess.fen}');
         print('Turn after move: ${chess.turn}');
+        if (chess.in_checkmate) {
+          winner = room.game!.players.values.firstWhere((player) =>
+              player.color ==
+              (chess.turn == chesslib.Color.BLACK ? 'white' : 'black'));
+        }
+        print('CheckMate: ${chess.in_checkmate}');
+        //print('Exception happens before this line?');
         final updatedRoom = room.copyWith(
           game: room.game!.copyWith(
-              fen: chess.fen,
-              currentMove:
-                  chess.turn == chesslib.Color.BLACK ? 'black' : 'white'),
+            fen: chess.fen,
+            currentMove: chess.turn == chesslib.Color.BLACK ? 'black' : 'white',
+            isCheckmate: chess.in_checkmate,
+            isDraw: chess.in_draw,
+            winner: winner,
+          ),
         );
         await _databaseService.updateRoomInDB(updatedRoom);
       } else {

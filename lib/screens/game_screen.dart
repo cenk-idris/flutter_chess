@@ -42,7 +42,16 @@ class _GameScreenState extends State<GameScreen> {
         builder: (context, userState) {
           if (userState is UserRegistered) {
             final user = userState.user;
-            return BlocBuilder<RoomCubit, RoomState>(
+            return BlocConsumer<RoomCubit, RoomState>(
+              listener: (context, roomState) {
+                // Implement dialog logic for end game
+                if (roomState is GameLoaded) {
+                  final game = roomState.room.game!;
+                  if (game.isCheckmate || game.isDraw) {
+                    //print('Gotcha yoo azz');
+                  }
+                }
+              },
               builder: (context, roomState) {
                 if (roomState is GameLoaded) {
                   final updatedRoom = roomState.room;
@@ -56,8 +65,13 @@ class _GameScreenState extends State<GameScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Current fen: ${game.fen}'),
+                        //Text('Current fen: ${game.fen}'),
                         Text('Current turn: ${game.currentMove}'),
+                        if (game.isCheckmate)
+                          Text('CHECKMATE - WINNER : ${game.winner?.username}')
+                        else if (game.isDraw)
+                          Text('DRAW'),
+
                         SizedBox(height: 20.0),
                         SimpleChessBoard(
                           fen: game.fen,
@@ -95,7 +109,14 @@ class _GameScreenState extends State<GameScreen> {
                     ),
                   );
                 } else {
-                  return Center(child: CircularProgressIndicator());
+                  return Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('RoomError ${roomState.toString()}'),
+                      CircularProgressIndicator(),
+                    ],
+                  ));
                 }
               },
             );
