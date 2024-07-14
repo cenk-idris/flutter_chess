@@ -13,6 +13,13 @@ Flutter Chess is a Flutter application that allows users to create or join chess
 - Room and Game State Management with Firebase and BLoC
 - Responsive UI
 
+## Screenshots
+
+| User Registration                                             | Questionscreen                                            | Scorescreen                                         |
+|---------------------------------------------------------------|-----------------------------------------------------------|-----------------------------------------------------|
+| ![userRegistration](/assets/screenshots/userRegistration.png) | ![Question screen of QuizApp](/assets/questionscreen.jpg) | ![Score screen of QuizApp](/assets/scorescreen.jpg) |
+
+
 ## Technologies Used
 
 - [Flutter](https://flutter.dev/)
