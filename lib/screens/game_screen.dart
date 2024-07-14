@@ -172,6 +172,7 @@ class _GameScreenState extends State<GameScreen> {
                           chessBoardColors: ChessBoardColors()
                             ..lightSquaresColor = Colors.blue.shade100
                             ..darkSquaresColor = Colors.blue.shade600
+                            ..dndIndicatorColor = Colors.greenAccent.shade100
                             ..coordinatesZoneColor = Colors.blue
                             ..lastMoveArrowColor = Colors.cyan
                             ..startSquareColor = Colors.orange
